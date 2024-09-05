@@ -17,63 +17,53 @@
 # Dockerfile for installing the necessary dependencies for building Avro.
 # See BUILD.txt.
 
-FROM openjdk:8
+FROM openjdk:8-slim-buster
 WORKDIR /root
 CMD ["/avro/share/docker/run-tests.sh"]
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=isolemnlysweariamuptonogood \
     DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies from vanilla system packages
-RUN apt-get -qqy update \
- && apt-get -qqy install --no-install-recommends ant \
-                                                 apt-transport-https \
-                                                 asciidoc \
-                                                 bison \
-                                                 bzip2 \
-                                                 cmake \
-                                                 curl \
-                                                 doxygen \
-                                                 flex \
-                                                 g++ \
-                                                 gcc \
-                                                 git \
-                                                 libboost-all-dev \
-                                                 libfontconfig1-dev \
-                                                 libfreetype6-dev \
-                                                 libglib2.0-dev \
-                                                 libjansson-dev \
-                                                 libsnappy-dev \
-                                                 libsnappy1v5 \
-                                                 make \
-                                                 maven \
-                                                 perl \
-                                                 pycodestyle \
-                                                 python \
-                                                 python-pip \
-                                                 python-setuptools \
-                                                 python-snappy \
-                                                 python-wheel \
-                                                 python3-pip \
-                                                 python3-setuptools \
-                                                 python3-snappy \
-                                                 python3-wheel \
-                                                 rake \
-                                                 ruby \
-                                                 ruby-dev \
-                                                 source-highlight \
-                                                 subversion \
-                                                 valgrind \
- && apt-get -qqy clean \
- && rm -rf /var/lib/apt/lists
+RUN apt-get -qqy update
+RUN apt-get -qqy install --no-install-recommends ant
+RUN apt-get -qqy install --no-install-recommends apt-transport-https
+RUN apt-get -qqy install --no-install-recommends asciidoc
+RUN apt-get -qqy install --no-install-recommends bison
+RUN apt-get -qqy install --no-install-recommends bzip2
+RUN apt-get -qqy install --no-install-recommends cmake
+RUN apt-get -qqy install --no-install-recommends curl
+RUN apt-get -qqy install --no-install-recommends doxygen
+RUN apt-get -qqy install --no-install-recommends flex
+RUN apt-get -qqy install --no-install-recommends g++
+RUN apt-get -qqy install --no-install-recommends gcc
+RUN apt-get -qqy install --no-install-recommends git
+RUN apt-get -qqy install --no-install-recommends libboost-all-dev
+RUN apt-get -qqy install --no-install-recommends libfontconfig1-dev
+RUN apt-get -qqy install --no-install-recommends libfreetype6-dev
+RUN apt-get -qqy install --no-install-recommends libglib2.0-dev
+RUN apt-get -qqy install --no-install-recommends libjansson-dev
+RUN apt-get -qqy install --no-install-recommends libsnappy-dev
+RUN apt-get -qqy install --no-install-recommends libsnappy1v5
+RUN apt-get -qqy install --no-install-recommends make
+RUN apt-get -qqy install --no-install-recommends maven
+RUN apt-get -qqy install --no-install-recommends perl
+RUN apt-get -qqy install --no-install-recommends pycodestyle
+RUN apt-get -qqy install python
+RUN apt-get -qqy install python3
+RUN apt-get -qqy install --no-install-recommends rake
+RUN apt-get -qqy install --no-install-recommends ruby
+RUN apt-get -qqy install --no-install-recommends ruby-dev
+RUN apt-get -qqy install --no-install-recommends source-highlight
+RUN apt-get -qqy install --no-install-recommends subversion
+RUN apt-get -qqy install --no-install-recommends valgrind
+RUN apt-get -qqy clean
 
 # Install nodejs 6
-RUN curl -sSL https://deb.nodesource.com/setup_6.x \
-  | bash - \
- && apt-get -qqy install nodejs \
- && apt-get -qqy clean \
- && rm -rf /var/lib/apt/lists \
- && npm install -g grunt-cli \
- && npm cache clean
+RUN curl -sSL https://deb.nodesource.com/setup_6.x | bash -
+RUN apt-get -qqy install nodejs
+RUN apt-get -qqy clean
+RUN npm install -g grunt-cli
+RUN npm cache clean
 
 # Install Perl modules
 RUN curl -L https://cpanmin.us | perl - --self-upgrade && \
