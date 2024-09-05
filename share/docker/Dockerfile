@@ -62,6 +62,7 @@ RUN apt-get -qqy clean
 RUN curl -sSL https://deb.nodesource.com/setup_6.x | bash -
 RUN apt-get -qqy install nodejs
 RUN apt-get -qqy clean
+RUN apt install npm -y
 RUN npm install -g grunt-cli
 RUN npm cache clean
 
