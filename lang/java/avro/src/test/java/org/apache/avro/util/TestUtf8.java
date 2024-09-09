@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.nio.charset.StandardCharsets;
 
@@ -86,9 +87,9 @@ public class TestUtf8 {
       Callable callable) {
     try {
       callable.call();
-      Assert.fail("No exception was thrown, expected: " + expected.getName());
+      fail("No exception was thrown, expected: " + expected.getName());
     } catch (Exception actual) {
-      Assert.assertEquals(expected, actual.getClass());
+      assertEquals(expected, actual.getClass());
       return actual;
     }
     return null;
