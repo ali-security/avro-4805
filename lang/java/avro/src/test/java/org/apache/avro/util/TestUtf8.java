@@ -17,14 +17,38 @@
  */
 package org.apache.avro.util;
 
+import java.util.concurrent.Callable;
+
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertEquals;
 
 import java.nio.charset.StandardCharsets;
 
+import org.apache.avro.SystemLimitException;
+import org.apache.avro.TestSystemLimitException;
 import org.junit.Test;
 
 public class TestUtf8 {
+  @Test
+  public void oversizeUtf8() {
+    Utf8 u = new Utf8();
+    u.setByteLength(1024);
+    assertEquals(1024, u.getByteLength());
+    assertThrows(UnsupportedOperationException.class,
+        () -> u.setByteLength(TestSystemLimitException.MAX_ARRAY_VM_LIMIT + 1));
+
+    try {
+      System.setProperty(SystemLimitException.MAX_STRING_LENGTH_PROPERTY, Long.toString(1000L));
+      TestSystemLimitException.resetLimits();
+
+      Exception ex = assertThrows(SystemLimitException.class, () -> u.setByteLength(1024));
+      assertEquals("String length 1024 exceeds maximum allowed", ex.getMessage());
+    } finally {
+      System.clearProperty(SystemLimitException.MAX_STRING_LENGTH_PROPERTY);
+      TestSystemLimitException.resetLimits();
+    }
+  }
+
   @Test
   public void testByteConstructor() throws Exception {
     byte[] bs = "Foo".getBytes(StandardCharsets.UTF_8);
@@ -47,5 +71,26 @@ public class TestUtf8 {
     u.setByteLength(4);
     assertEquals(4, u.getByteLength());
     assertSame(content, u.getBytes());
+  }
+
+  /**
+   * A convenience method to avoid a large number of @Test(expected=...) tests
+   * 
+   * @param message            A String message to describe this assertion
+   * @param expected           An Exception class that the Runnable should throw
+   * @param containedInMessage A String that should be contained by the thrown
+   *                           exception's message
+   * @param callable           A Callable that is expected to throw the exception
+   */
+  public static Exception assertThrows(Class<? extends Exception> expected,
+      Callable callable) {
+    try {
+      callable.call();
+      Assert.fail("No exception was thrown, expected: " + expected.getName());
+    } catch (Exception actual) {
+      Assert.assertEquals(expected, actual.getClass());
+      return actual;
+    }
+    return null;
   }
 }

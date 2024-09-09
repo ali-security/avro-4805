@@ -39,16 +39,18 @@ import org.apache.avro.util.Utf8;
  * 'direct'.
  *
  * @see Encoder
+ * @see SystemLimitException
  */
 
 public class BinaryDecoder extends Decoder {
 
   /**
-   * The maximum size of array to allocate. Some VMs reserve some header words in
-   * an array. Attempts to allocate larger arrays may result in OutOfMemoryError:
-   * Requested array size exceeds VM limit
+   * When reading a collection (MAP or ARRAY), this keeps track of the number of
+   * elements to ensure that the
+   * {@link SystemLimitException#checkMaxCollectionLength} constraint is
+   * respected.
    */
-  private static final long MAX_ARRAY_SIZE = (long) Integer.MAX_VALUE - 8L;
+  private long collectionCount = 0L;
 
   private ByteSource source = null;
   // we keep the buffer and its state variables in this class and not in a
@@ -62,7 +64,6 @@ public class BinaryDecoder extends Decoder {
   private int minPos = 0;
   private int pos = 0;
   private int limit = 0;
-  private long collectionCount = 0L;
 
   byte[] getBuf() {
     return buf;

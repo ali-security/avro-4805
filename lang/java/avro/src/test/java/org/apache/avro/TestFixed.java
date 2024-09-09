@@ -18,24 +18,27 @@
 
 package org.apache.avro;
 
+import java.util.concurrent.Callable;
+
 import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.SystemLimitException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestFixed {
-  // @Test
-  // void fixedLengthOutOfLimit() {
-  //   Exception ex = assertThrows(UnsupportedOperationException.class,
-  //       () -> Schema.createFixed("oversize", "doc", "space", Integer.MAX_VALUE));
-  //   assertEquals(TestSystemLimitException.ERROR_VM_LIMIT_BYTES, ex.getMessage());
-  // }
+  @Test
+  public void fixedLengthOutOfLimit() {
+    Exception ex = assertThrows(UnsupportedOperationException.class,
+        () -> Schema.createFixed("oversize", "doc", "space", Integer.MAX_VALUE));
+    Assert.assertEquals(TestSystemLimitException.ERROR_VM_LIMIT_BYTES, ex.getMessage());
+  }
 
-  // @Test
-  // void fixedNegativeLength() {
-  //   Exception ex = assertThrows(AvroRuntimeException.class, () -> Schema.createFixed("negative", "doc", "space", -1));
-  //   Assert.assertEquals(TestSystemLimitException.ERROR_NEGATIVE, ex.getMessage());
-  // }
+  @Test
+  public void fixedNegativeLength() {
+    Exception ex = assertThrows(AvroRuntimeException.class, () -> Schema.createFixed("negative", "doc", "space", -1));
+    Assert.assertEquals(TestSystemLimitException.ERROR_NEGATIVE, ex.getMessage());
+  }
 
   @Test
   public void testFixedDefaultValueDrop() {
@@ -47,4 +50,24 @@ public class TestFixed {
     Assert.assertArrayEquals(new byte[16], (byte[]) field.defaultVal());
   }
 
+  /**
+   * A convenience method to avoid a large number of @Test(expected=...) tests
+   * 
+   * @param message            A String message to describe this assertion
+   * @param expected           An Exception class that the Runnable should throw
+   * @param containedInMessage A String that should be contained by the thrown
+   *                           exception's message
+   * @param callable           A Callable that is expected to throw the exception
+   */
+  public static Exception assertThrows(Class<? extends Exception> expected,
+      Callable callable) {
+    try {
+      callable.call();
+      Assert.fail("No exception was thrown, expected: " + expected.getName());
+    } catch (Exception actual) {
+      Assert.assertEquals(expected, actual.getClass());
+      return actual;
+    }
+    return null;
+  }
 }

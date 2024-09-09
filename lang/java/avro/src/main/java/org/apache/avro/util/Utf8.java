@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.avro.SystemLimitException;
 import org.apache.avro.io.BinaryData;
-import org.slf4j.LoggerFactory;
 
 /**
  * A Utf8 string. Unlike {@link String}, instances are mutable. This is more
@@ -29,22 +28,7 @@ import org.slf4j.LoggerFactory;
  * as a single instance may be reused.
  */
 public class Utf8 implements Comparable<Utf8>, CharSequence {
-  private static final String MAX_LENGTH_PROPERTY = "org.apache.avro.limits.string.maxLength";
-  private static final int MAX_LENGTH;
   private static final byte[] EMPTY = new byte[0];
-
-  static {
-    String o = System.getProperty(MAX_LENGTH_PROPERTY);
-    int i = Integer.MAX_VALUE;
-    if (o != null) {
-      try {
-        i = Integer.parseUnsignedInt(o);
-      } catch (NumberFormatException nfe) {
-        LoggerFactory.getLogger(Utf8.class).warn("Could not parse property " + MAX_LENGTH_PROPERTY + ": " + o, nfe);
-      }
-    }
-    MAX_LENGTH = i;
-  }
 
   private byte[] bytes = EMPTY;
   private int length;
@@ -55,8 +39,9 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
 
   public Utf8(String string) {
     this.bytes = getBytesFor(string);
-    this.length = bytes.length;
+    int length = bytes.length;
     SystemLimitException.checkMaxStringLength(length);
+    this.length = length;
     this.string = string;
   }
 
@@ -68,9 +53,10 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
   }
 
   public Utf8(byte[] bytes) {
-    this.bytes = bytes;
-    this.length = bytes.length;
+    int length = bytes.length;
     SystemLimitException.checkMaxStringLength(length);
+    this.bytes = bytes;
+    this.length = length;
   }
 
   /**
@@ -124,9 +110,11 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
 
   /** Set to the contents of a String. */
   public Utf8 set(String string) {
-    this.bytes = getBytesFor(string);
-    this.length = bytes.length;
-    SystemLimitException.checkMaxStringLength(this.length);
+    byte[] bytes = getBytesFor(string);
+    int length = bytes.length;
+    SystemLimitException.checkMaxStringLength(length);
+    this.bytes = bytes;
+    this.length = length;
     this.string = string;
     return this;
   }
