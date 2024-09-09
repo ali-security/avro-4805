@@ -19,7 +19,7 @@ package org.apache.avro.util;
 
 import java.nio.charset.StandardCharsets;
 
-import org.apache.avro.AvroRuntimeException;
+import org.apache.avro.SystemLimitException;
 import org.apache.avro.io.BinaryData;
 import org.slf4j.LoggerFactory;
 
@@ -56,6 +56,7 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
   public Utf8(String string) {
     this.bytes = getBytesFor(string);
     this.length = bytes.length;
+    SystemLimitException.checkMaxStringLength(length);
     this.string = string;
   }
 
@@ -69,6 +70,7 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
   public Utf8(byte[] bytes) {
     this.bytes = bytes;
     this.length = bytes.length;
+    SystemLimitException.checkMaxStringLength(length);
   }
 
   /**
@@ -109,9 +111,7 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
    * length does not change, as this also clears the cached String.
    */
   public Utf8 setByteLength(int newLength) {
-    if (newLength > MAX_LENGTH) {
-      throw new AvroRuntimeException("String length " + newLength + " exceeds maximum allowed");
-    }
+    SystemLimitException.checkMaxStringLength(newLength);
     if (this.bytes.length < newLength) {
       byte[] newBytes = new byte[newLength];
       System.arraycopy(bytes, 0, newBytes, 0, this.length);
@@ -126,6 +126,7 @@ public class Utf8 implements Comparable<Utf8>, CharSequence {
   public Utf8 set(String string) {
     this.bytes = getBytesFor(string);
     this.length = bytes.length;
+    SystemLimitException.checkMaxStringLength(this.length);
     this.string = string;
     return this;
   }

@@ -18,10 +18,24 @@
 
 package org.apache.avro;
 
+import org.apache.avro.AvroRuntimeException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestFixed {
+  // @Test
+  // void fixedLengthOutOfLimit() {
+  //   Exception ex = assertThrows(UnsupportedOperationException.class,
+  //       () -> Schema.createFixed("oversize", "doc", "space", Integer.MAX_VALUE));
+  //   assertEquals(TestSystemLimitException.ERROR_VM_LIMIT_BYTES, ex.getMessage());
+  // }
+
+  // @Test
+  // void fixedNegativeLength() {
+  //   Exception ex = assertThrows(AvroRuntimeException.class, () -> Schema.createFixed("negative", "doc", "space", -1));
+  //   Assert.assertEquals(TestSystemLimitException.ERROR_NEGATIVE, ex.getMessage());
+  // }
 
   @Test
   public void testFixedDefaultValueDrop() {

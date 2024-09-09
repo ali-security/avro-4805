@@ -34,7 +34,7 @@ main() {
       *) usage; return 1;;
     esac
   done
-  python3 setup.py "$@"
+  python3.9 setup.py "$@"
 }
 
 main "$@"
